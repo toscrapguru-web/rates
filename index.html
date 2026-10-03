@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScrapGuru Rate Card</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a weighbridge-slip form on the left, the WhatsApp message as it will arrive on the right; stacks on a phone. */
+  :root {
+    --bg: #ECF0ED;
+    --surface: #FFFFFF;
+    --ink: #15201A;
+    --muted: #586860;
+    --line: #CBD6CF;
+    --accent: #0C7446;
+    --accent-ink: #FFFFFF;
+    --bubble: #DDF3D2;
+    --bubble-ink: #10200F;
+    --warn: #8A5A00;
+    --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --body: "Barlow", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1512; --surface: #18211C; --ink: #E5ECE7; --muted: #94A49B;
+      --line: #2C3A32; --accent: #3FC985; --accent-ink: #06140C;
+      --bubble: #164A36; --bubble-ink: #E9F5EC; --warn: #E0B15A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1512; --surface: #18211C; --ink: #E5ECE7; --muted: #94A49B;
+    --line: #2C3A32; --accent: #3FC985; --accent-ink: #06140C;
+    --bubble: #164A36; --bubble-ink: #E9F5EC; --warn: #E0B15A;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--body); font-size: 16px; line-height: 1.45;
+    padding-inline: 16px; padding-block: 20px 40px;
+  }
+  .wrap { max-width: 1040px; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+  header h1 {
+    font-family: var(--display); font-weight: 700; font-size: 2rem; line-height: 1.05;
+    margin: 0; letter-spacing: 0.01em; text-wrap: balance;
+  }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+
+  .cols { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 800px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+
+  form { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  fieldset {
+    border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+    margin: 0; padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  legend {
+    font-family: var(--display); font-weight: 600; font-size: 0.95rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); padding-inline: 6px;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+  .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .row > .field { flex: 1 1 180px; }
+  label, .label { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+  input, select, textarea {
+    font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; width: 100%; min-width: 0;
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .hint { font-size: 0.82rem; color: var(--muted); margin: 0; }
+  .sample { color: var(--warn); }
+
+  .items { display: flex; flex-direction: column; gap: 8px; }
+  .item { display: grid; grid-template-columns: minmax(0, 1fr) 92px 96px 38px; gap: 8px; align-items: center; }
+  .item input.rate { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  @media (max-width: 440px) { .item { grid-template-columns: minmax(0, 1fr) 72px 78px 34px; gap: 6px; } }
+
+  button, .btn {
+    font: inherit; font-weight: 600; cursor: pointer; border-radius: 4px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    padding: 9px 14px; text-decoration: none; text-align: center; display: inline-block;
+  }
+  .remove { padding: 0; height: 38px; color: var(--muted); font-size: 1.1rem; line-height: 1; }
+  .add { align-self: flex-start; }
+  .primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  .out { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  @media (max-width: 800px) { .out { position: static; } }
+  .out h2 {
+    font-family: var(--display); font-weight: 600; font-size: 0.95rem; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+  }
+  .bubble {
+    background: var(--bubble); color: var(--bubble-ink); border-radius: 2px 10px 10px 10px;
+    padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.4;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .actions > * { flex: 1 1 150px; }
+  .status { min-height: 1.3em; font-size: 0.88rem; color: var(--muted); margin: 0; }
+  details { border-top: 1px solid var(--line); padding-top: 10px; }
+  summary { cursor: pointer; font-size: 0.88rem; color: var(--muted); }
+  #plain { font-family: var(--mono); font-size: 0.82rem; margin-top: 8px; resize: vertical; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>ScrapGuru Rate Card</h1>
+    <p>Fill in today's rates and the delivery details. The WhatsApp message builds itself as you type.</p>
+  </header>
+
+  <div class="cols">
+    <form id="form" autocomplete="off">
+      <fieldset>
+        <legend>Your firm</legend>
+        <div class="row">
+          <div class="field"><label for="firm">Firm name</label><input id="firm" type="text"></div>
+          <div class="field"><label for="heading">Heading</label><input id="heading" type="text"></div>
+        </div>
+        <div class="field"><label for="firm-address">Address</label><textarea id="firm-address" rows="2"></textarea></div>
+        <div class="field"><label for="c-gst">Your GSTIN</label><input id="c-gst" type="text"></div>
+        <div class="row">
+          <div class="field"><label for="date">Rate date</label><input id="date" type="date"></div>
+          <div class="field"><label for="valid">Valid till</label><input id="valid" type="date"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Item rates</legend>
+        <p class="hint sample" id="sample-note">These are sample rates. Replace them with yours.</p>
+        <div class="items" id="items"></div>
+        <button type="button" class="add" id="add-item">Add item</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Delivery to</legend>
+        <div class="field"><label for="to-name">Factory or firm name</label><input id="to-name" type="text"></div>
+        <div class="field"><label for="to-address">Address</label><textarea id="to-address" rows="2"></textarea></div>
+        <div class="field"><label for="to-gst">Their GSTIN</label><input id="to-gst" type="text"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Terms</legend>
+        <div class="row">
+          <div class="field">
+            <label for="gst">GST</label>
+            <select id="gst">
+              <option value="">Leave out</option>
+              <option value="GST extra as applicable">Extra as applicable</option>
+              <option value="Rates include GST">Included in rates</option>
+            </select>
+          </div>
+          <div class="field"><label for="payment">Payment</label><input id="payment" type="text" placeholder="e.g. Same day"></div>
+        </div>
+        <div class="field"><label for="note">Extra note</label><input id="note" type="text" placeholder="e.g. Rates for material delivered at factory"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Contact</legend>
+        <div class="row">
+          <div class="field"><label for="c-name">Contact person</label><input id="c-name" type="text"></div>
+          <div class="field"><label for="c-phone">Phone</label><input id="c-phone" type="tel" inputmode="tel"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Send to</legend>
+        <div class="field">
+          <label for="send-to">One WhatsApp number (optional)</label>
+          <input id="send-to" type="tel" inputmode="tel" placeholder="Leave blank to choose chats in WhatsApp">
+        </div>
+        <p class="hint">For a broadcast list, use Copy message and paste it into the list.</p>
+      </fieldset>
+    </form>
+
+    <section class="out" aria-label="Message">
+      <h2>Message preview</h2>
+      <div class="bubble" id="preview"></div>
+      <div class="actions">
+        <a class="btn primary" id="share" target="_blank" rel="noopener" href="https://wa.me/">Open in WhatsApp</a>
+        <button type="button" id="copy">Copy message</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+      <details id="plain-box">
+        <summary>Show plain text</summary>
+        <textarea id="plain" rows="12" readonly></textarea>
+      </details>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = "scrapguru-rate-card-v1";
+  var FIELDS = ["firm", "firm-address", "heading", "date", "valid", "to-name", "to-address", "to-gst",
+    "gst", "payment", "note", "c-name", "c-phone", "c-gst", "send-to"];
+  var SAMPLE_ITEMS = [
+    {name: "Iron", rate: "32", unit: "kg"},
+    {name: "Copper", rate: "720", unit: "kg"},
+    {name: "Aluminium", rate: "185", unit: "kg"},
+    {name: "Paper", rate: "14", unit: "kg"}
+  ];
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function $(id) { return document.getElementById(id); }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  var state = {
+    values: {firm: "ScrapGuru", heading: "Wholesale Scrap Rates", gst: "GST extra as applicable"},
+    items: SAMPLE_ITEMS.map(function (i) { return Object.assign({}, i); }),
+    sample: true
+  };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && saved.values && Array.isArray(saved.items)) state = saved;
+  } catch (e) { /* storage unavailable: start from the defaults */ }
+  // The rate date always starts at today; yesterday's date is never what is wanted.
+  state.values.date = today();
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* not saved */ }
+  }
+
+  function renderItems() {
+    var box = $("items");
+    box.textContent = "";
+    state.items.forEach(function (item, index) {
+      var row = document.createElement("div");
+      row.className = "item";
+
+      var name = document.createElement("input");
+      name.type = "text"; name.id = "item-name-" + index; name.value = item.name;
+      name.placeholder = "Item"; name.setAttribute("aria-label", "Item name");
+      name.addEventListener("input", function () { item.name = name.value; changed(); });
+
+      var rate = document.createElement("input");
+      rate.type = "text"; rate.inputMode = "decimal"; rate.className = "rate";
+      rate.id = "item-rate-" + index; rate.value = item.rate;
+      rate.placeholder = "Rate"; rate.setAttribute("aria-label", "Rate in rupees");
+      rate.addEventListener("input", function () { item.rate = rate.value; changed(); });
+
+      var unit = document.createElement("select");
+      unit.id = "item-unit-" + index; unit.setAttribute("aria-label", "Unit");
+      ["kg", "quintal", "ton", "piece"].forEach(function (u) {
+        var option = document.createElement("option");
+        option.value = u; option.textContent = "per " + u;
+        unit.appendChild(option);
+      });
+      unit.value = item.unit || "kg";
+      unit.addEventListener("change", function () { item.unit = unit.value; changed(); });
+
+      var remove = document.createElement("button");
+      remove.type = "button"; remove.className = "remove"; remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove " + (item.name || "item"));
+      remove.addEventListener("click", function () {
+        state.items.splice(index, 1); renderItems(); changed();
+      });
+
+      row.appendChild(name); row.appendChild(rate); row.appendChild(unit); row.appendChild(remove);
+      box.appendChild(row);
+    });
+  }
+
+  function dateText(value) {
+    var parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+    return parts ? parts[3] + " " + MONTHS[Number(parts[2]) - 1] + " " + parts[1] : "";
+  }
+
+  function buildMessage() {
+    var v = state.values;
+    function t(key) { return (v[key] || "").trim(); }
+    var blocks = [];
+
+    var head = [];
+    if (t("firm")) head.push("*" + t("firm").toUpperCase() + "*");
+    if (t("firm-address")) head.push(t("firm-address"));
+    if (t("c-gst")) head.push("GSTIN: " + t("c-gst").toUpperCase());
+    if (head.length) blocks.push(head);
+
+    // Heading, date, rates and the valid-till note form one block.
+    var rates = state.items.filter(function (i) { return i.name.trim() && String(i.rate).trim(); })
+      .map(function (i) { return i.name.trim() + ": ₹" + String(i.rate).trim() + "/" + (i.unit || "kg"); });
+    var title = [t("heading") || (rates.length ? "Item Rates" : ""), dateText(v.date)]
+      .filter(Boolean).join(" - ");
+    var rateBlock = (title ? ["*" + title + "*"] : []).concat(rates);
+    if (dateText(v.valid)) rateBlock.push("_Note: rates valid till " + dateText(v.valid) + "_");
+    if (rateBlock.length) blocks.push(rateBlock);
+
+    var to = [];
+    if (t("to-name")) to.push(t("to-name"));
+    if (t("to-address")) to.push(t("to-address"));
+    if (t("to-gst")) to.push("GSTIN: " + t("to-gst").toUpperCase());
+    if (to.length) blocks.push(["*DELIVERY TO*"].concat(to));
+
+    var terms = [];
+    if (t("gst")) terms.push("• " + t("gst"));
+    if (t("payment")) terms.push("• Payment: " + t("payment"));
+    if (t("note")) terms.push("• " + t("note"));
+    if (terms.length) blocks.push(["*TERMS*"].concat(terms));
+
+    var contact = [];
+    if (t("c-name")) contact.push(t("c-name"));
+    if (t("c-phone")) contact.push("Phone: " + t("c-phone"));
+    if (contact.length) blocks.push(["*CONTACT*"].concat(contact));
+
+    return blocks.map(function (b) { return b.join("\n"); }).join("\n\n");
+  }
+
+  // Shows the message the way WhatsApp will: *bold* and _italic_.
+  function previewHtml(message) {
+    var safe = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return safe.replace(/\*([^*\n]+)\*/g, "<strong>$1</strong>").replace(/(^|\s)_([^_\n]+)_/g, "$1<em>$2</em>");
+  }
+
+  function waNumber(value) {
+    var digits = (value || "").replace(/\D/g, "").replace(/^0+/, "");
+    return digits.length === 10 ? "91" + digits : digits;
+  }
+
+  function refresh() {
+    var message = buildMessage();
+    $("preview").innerHTML = message ? previewHtml(message) : "Fill in the form to build the message.";
+    $("plain").value = message;
+    $("share").href = "https://wa.me/" + waNumber(state.values["send-to"]) + "?text=" + encodeURIComponent(message);
+    $("sample-note").hidden = !state.sample;
+  }
+
+  function changed() {
+    state.sample = false;
+    $("status").textContent = "";
+    refresh();
+    save();
+  }
+
+  FIELDS.forEach(function (id) {
+    var el = $(id);
+    el.value = state.values[id] || "";
+    el.addEventListener("input", function () { state.values[id] = el.value; var s = state.sample; changed(); state.sample = s; refresh(); save(); });
+  });
+
+  $("add-item").addEventListener("click", function () {
+    state.items.push({name: "", rate: "", unit: "kg"});
+    renderItems(); refresh(); save();
+    var last = $("item-name-" + (state.items.length - 1));
+    if (last) last.focus();
+  });
+
+  $("copy").addEventListener("click", function () {
+    var status = $("status");
+    function fallback() {
+      $("plain-box").open = true;
+      $("plain").focus(); $("plain").select();
+      status.textContent = "Copy did not work here. The text is selected below; press and hold to copy it.";
+    }
+    try {
+      navigator.clipboard.writeText($("plain").value).then(function () {
+        status.textContent = "Copied. Paste it into your WhatsApp broadcast list.";
+      }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  $("form").addEventListener("submit", function (event) { event.preventDefault(); });
+
+  renderItems();
+  refresh();
+})();
+</script>
+</body>
+</html>
